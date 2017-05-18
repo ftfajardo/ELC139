@@ -61,12 +61,19 @@ primeiro processo,então mesmo que tratado esse detalhe eu não conseguiria medi
 speedup maior do que o real,o quão maior depende da diferença entre a criação do 1 e o último processo ,mas se for pequeno não
 é uma diferença que torna os dados inválidos.
 -Partindo para a Análise do Código percebe-se que após vários experimentos realizados como o gerador de ligações é random
-não se tem sempre um caso especifíco do Dijkstra(pior caso onde precisa percorrer todos os grafos), mas percebe-se que o paralelismo usado nesse código serve para apenas acelerar o tempo total, é possível usar o paralelismo para melhorar o Dijkstra em seu desepenho,
-no qual é aplicavel para n grandes, como não foi especificado se o objetivo era reduzir esse tempo com o paralelismo, não se tentou essa implementação, 
-visto que para casos onde temos um n total pequeno o desempenho do algorítmo que é n^2 não influência tanto(baixos tempos).
+não se tem sempre um caso especifíco do Dijkstra(pior caso onde precisa percorrer todos os grafos), mas percebe-se que o paralelismo usado nesse código serve para apenas acelerar o tempo total, é possível usar o paralelismo para melhorar o Dijkstra em seu desepenho,no qual é aplicavel para n grandes, como não foi especificado se o objetivo era reduzir esse tempo com o paralelismo, não se tentou essa implementação, visto que para casos onde temos um n total pequeno o desempenho do algorítmo que é n^2 não influência tanto(baixos tempos).
 Nota-se que para n 752 por exemplo ocorre muita demora, possívelmente pois o random gerou perto do pior caso(muitass ligações)
-(o random pode gerar como ocorre para o 500 muitos grafos desconexos o que facilita a busca) e como o n já está consideravél ocorre uma demora abusiva, 
-para casos assim é necessário implementar a versão do Dijkstra que particiona a tabela de distâncias usando variáveis globais 
-que são atualizadas o que parece mais fácil de ser feito em um API tipo o openMP.
--
--Obs final: dificuldades para obter os tempos usando openMpi e quando o programa faz alguma execução errada é necessário reiniciar o computador.  
+(o random pode gerar como ocorre para o 500 muitos grafos desconexos o que facilita a busca) e como o n já está consideravél ocorre uma demora abusiva, para casos assim é necessário implementar a versão do Dijkstra que particiona a tabela de distâncias usando variáveis globais que são atualizadas o que parece mais fácil de ser feito em um API tipo o openMP.
+
+-Obs final: dificuldades para obter os tempos usando openMpi e quando o programa faz alguma execução errada é necessário reiniciar o computador.
+
+Update : Consegui pegar os tempos que demora para a criação dos vários processos e percebi que é um tempo muito baixo 
+mesmo se usado vários processos como seria em uma situação de cluster, usei o seguinte código (fiz isso pois se usava somente
+o tempo do primeiro processo)
+  if(rank != 0){
+	  start = MPI_Wtime();
+	  printf("start1 = : %f\n", start);	
+	}
+ //existe tambem a variação de tempos dos procesos diferentes que ocasionam em uma demora mas isso é pequeno também
+Depois disso retestei o código com o comentário feito de que se rank==0 posso criar os grafos e suas ligações só uma vez, porém é necessário uma sincronização para fazer aquele processo executar primeiro, pois dava erro nas respostas só com o código sugerido.
+
