@@ -12,7 +12,8 @@
 #include <time.h>
 
 // Total de cidades para construção do grafo
-#define TOTALCIDADES 20
+#define TOTALCIDADES 500
+
 
 // Grafo de distancia entre as cidades
 int distancias[TOTALCIDADES*TOTALCIDADES];
@@ -28,9 +29,15 @@ double custos[TOTALCIDADES];
       - Pos 0 ate (TOTALCIDADES - 1) = cidade 1
       - Pos (TOTALCIDADES) ate ((2*TOTALCIDADES) -1) = cidade 2
 */
+
+void imprime(struct timeval tv1,struct timeval tv2){
+	printf ("+%f\n", (double) (tv2.tv_usec - tv1.tv_usec) / 1000000 + (double) (tv2.tv_sec - tv1.tv_sec));
+	printf ("Tempo = %f segundos\n", (double) (tv2.tv_usec - tv1.tv_usec) / 1000000 + (double) (tv2.tv_sec - tv1.tv_sec));
+}
+
 void criaGrafo(){
   int origem, destino, totalLigacoes, i, ok, distancia;
-
+  
   totalLigacoes = rand() % (TOTALCIDADES * 4);
   printf("TOTAL LIGACOES: %i\n", totalLigacoes);
 
@@ -77,8 +84,10 @@ void dijkstra(int origem, int destino){
     verticesNoCaminho[i] = 0;
     if (distancias[(origem) * TOTALCIDADES + i] != -1){
       custos[i] = distancias[(origem) * TOTALCIDADES + i];
+	//printf("custo[i] = %f , i = %d \n",custos[i],i);	
     }else{
       custos[i] = HUGE_VAL;
+      //printf("custo[i] 2= %f , i = %d \n",custos[i],i);	
     }
   }
 
@@ -123,14 +132,17 @@ void dijkstra(int origem, int destino){
 */
 
 void calculoDistancia(){
+  struct timeval  tv1, tv2;
   int i, j;
-
-  for(i = 0; i < TOTALCIDADES; i++){
+  gettimeofday(&tv1, NULL);
+  for(i = 0; i < TOTALCIDADES; i++){	
     for(j = 0; j < TOTALCIDADES; j++){
       dijkstra(i, j);
     }
   }
-
+  gettimeofday(&tv2, NULL);
+  imprime(tv1,tv2);
+  
 }
 
 /*
